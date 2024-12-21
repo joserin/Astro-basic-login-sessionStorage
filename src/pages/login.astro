@@ -1,0 +1,161 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="login" description='basic login in astro with session storage'>
+    <main>
+        <form class="container">
+            <header>
+                <h3>Login</h3>
+            </header>
+            <section>
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="admin@astro.demo" required />
+            </section>
+            <section>
+              <label for="password">Password</label>
+              <div class="input-password">
+                <input id="password" type="password" placeholder="1234" required />
+                <span class="hide-show">
+                    <label for="check-hide">see</label>
+                    <input id="check-hide" type="checkbox"/>
+                </span>
+              </div>
+            </section>
+            <button class="button-submit" type="submit">
+              Submit
+            </button>
+            <footer>
+                <a href="#" >Forgot password?</a>
+            </footer>
+        </form>
+    </main>
+</Layout>
+
+<style>
+    main{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color:darkgrey;
+    }
+    header{
+        text-align: center;
+        width: fit-content;
+        font-size: 1.5rem;
+    }
+    footer{
+        width: fit-content;
+        display: flex;
+        margin: 0 auto;
+        padding: 0.25rem;
+    }
+    section{
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        gap: 0.5rem;
+        margin: 0.25rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.25rem;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .input-password{
+        display: flex;
+        flex-direction: row;
+        font-size: 1rem;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    .button-submit {
+      width: 80%;
+      padding: 0.5rem;
+      background-color: #2a01f7;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .container {
+        font-size: larger;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 1rem;
+        width: 30%;
+        margin: 0 auto;
+        gap: 0.5rem;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
+    }
+    .hide-show{
+        margin: 0.2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: fit-content;
+        position: absolute;
+        right: 0;
+    }
+    #check-hide{
+        z-index: 1;
+        position: absolute;
+        cursor: pointer;
+        opacity: 0;
+    }
+    @media (max-width: 900px) {
+        .container {
+            width: 60%;
+        }
+    }
+    @media (max-width: 600px) {
+        .container {
+            width: 80%;
+        }
+    }
+</style>
+<script>
+    const submit = document.querySelector('button')
+    let show = document.getElementById("password") as HTMLInputElement
+    const checkbox = document.getElementById("check-hide") as HTMLInputElement;
+    const email = document.getElementById('email') as HTMLInputElement;
+    const password = document.getElementById('password') as HTMLInputElement;
+
+    if(checkbox){
+        checkbox?.addEventListener('change', () => {
+            show.type = checkbox.checked ? 'text' : 'password';
+        });
+    }
+
+    if(submit && email && password){
+        submit.addEventListener('click', event => {
+            event.preventDefault()
+            if (email.value === 'admin@astro.demo' && password.value === '1234') {
+                sessionStorage.setItem('isLoggedIn', 'true')
+                window.location.href = '/'
+            } else {
+                if(email.value === ''){
+                    alert('error, entry email')
+                }else if(password.value === ''){
+                    alert('error, entry password')
+                }else{
+                    alert('error, try again')
+                }
+            }
+        })
+    }
+
+    
+</script>
+
+
