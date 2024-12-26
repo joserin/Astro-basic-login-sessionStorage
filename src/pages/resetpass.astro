@@ -1,0 +1,174 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from '../components/Card.astro';
+import { supabase } from "../lib/supabase";
+
+let information = null
+
+if(Astro.request.method === 'POST'){
+    try {
+        const formData = await Astro.request.formData();
+        
+        const email = formData.get("email")?.toString();
+        if (!email) {
+            return new Response("Email and password are required", { status: 400 });
+        }
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: '/updatepassword',
+        })
+        if (error) {
+            return new Response(error.message, { status: 500 });
+        }
+        information = email
+    } catch (error) {
+        console.error(error)
+    }
+}
+---
+
+<Layout title="reset password" description='basic reset password in astro with supabase'>
+    <Card>
+        <div class="container">
+            <header>
+                <h1>Reset password</h1>
+                <h6>Send a password reset request to email</h6>
+            </header>
+            <form class="conteiner-form" method="post">
+                <section class="main-form">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="you@email.com" required/>
+                </section>
+                {information === null ? (
+                    <button type="submit">
+                        Reset password
+                    </button>
+                ) : (
+                    <div class="info-reset-main">
+                        <section class="info-reset">
+                            <label>Email:</label>
+                            <span> {information} </span>
+                        </section>
+                        <section>
+                            <span>Check your mail to recover your account</span>
+                        </section>
+                        
+                    </div>
+                    
+                )}
+                
+            </form>
+            <footer>
+                <span> go to login?
+                    <a href="/"> Login here </a>
+                </span>
+            </footer>
+        </div>
+	</Card>
+</Layout>
+
+<style>
+	h1, h6{
+		margin: 0.25rem;
+	}
+	header{
+		display: flex;
+		flex-direction: column;
+        width: 100%;
+    }
+	input {
+      width: 100%;
+      padding: 0.25rem;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+	.input-password{
+        display: flex;
+        flex-direction: row;
+        font-size: 1rem;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+	.main-form{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        gap: 0.5rem;
+        margin: 0.25rem;
+    }
+    button{
+      width: 100%;
+      padding: 0.5rem;
+      background-color: #2a01f7;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+	footer{
+        width: fit-content;
+        display: flex;
+		flex-direction: column;
+        margin: 0 auto;
+        padding: 0.25rem;
+		font-size: 1rem;
+    }
+	.container {
+        font-size: larger;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 1rem;
+        width: 30%;
+        margin: 0 auto;
+        gap: 0.5rem;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
+    }
+    .conteiner-form{
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        justify-content: center;
+        align-items: center;
+    }
+	.hide-show{
+        margin: 0.2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: fit-content;
+        position: absolute;
+        right: 0;
+    }
+    #check-hide{
+        z-index: 1;
+        position: absolute;
+        cursor: pointer;
+        opacity: 0;
+    }
+    .info-reset{
+        display: flex;
+        flex-direction: row;
+    }
+    .info-reset-main{
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+        .container {
+            width: 60%;
+        }
+    }
+    @media (max-width: 600px) {
+        .container {
+            width: 80%;
+        }
+    }
+</style>

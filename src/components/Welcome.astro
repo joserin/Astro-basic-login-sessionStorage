@@ -1,6 +1,9 @@
 ---
-import astroLogo from '../assets/astro.svg';
-import background from '../assets/background.svg';
+interface Props {
+  user: string
+}
+
+const {user} = Astro.props
 ---
 
 
@@ -8,12 +11,16 @@ import background from '../assets/background.svg';
 	<div class="container">
 		<header>
 			<h1>Welcome</h1>
+            <span class="mail">{user}</span>
 		</header>
 		<section >
-			<button class="button-submit" type="button">
-				Logout
-			  </button>
+			<p>This is the home</p>
 		</section>
+        <footer>
+            <form action="/api/auth/signout">
+                <button type="submit">Sign out</button>
+            </form>
+        </footer>
 	</div>
 </main>
 
@@ -40,6 +47,15 @@ import background from '../assets/background.svg';
         background-color: white;
         box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
     }
+    header{
+        width: 100%;
+    }
+    h1{
+        margin: 0.3em;
+    }
+    .mail{
+        font-size: 1.2rem;
+    }
 	@media (max-width: 900px) {
         .container {
             width: 60%;
@@ -51,16 +67,3 @@ import background from '../assets/background.svg';
         }
     }
 </style>
-
-<script>
-	const buttonLogout = document.querySelector('button')
-
-	if(buttonLogout){
-		buttonLogout.addEventListener('click', () =>{
-			sessionStorage.setItem('isLoggedIn', 'false')
-    		window.location.href = '/login'
-		})
-	}
-
-	
-</script>
