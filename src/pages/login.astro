@@ -1,21 +1,30 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const { cookies, redirect } = Astro;
+
+const accessToken = cookies.get("sb-access-token");
+const refreshToken = cookies.get("sb-refresh-token");
+
+if (accessToken && refreshToken) {
+  return redirect("/");
+}
 ---
 
 <Layout title="login" description='basic login in astro with session storage'>
     <main>
-        <form class="container">
+        <form class="container" action="/api/auth/signin" method="post">
             <header>
                 <h3>Login</h3>
             </header>
             <section>
               <label for="email">Email</label>
-              <input id="email" type="email" placeholder="admin@astro.demo" required />
+              <input name="email" id="email" type="email" placeholder="admin@astro.demo" required />
             </section>
             <section>
               <label for="password">Password</label>
               <div class="input-password">
-                <input id="password" type="password" placeholder="1234" required />
+                <input id="password" type="password" name="password" placeholder="1234" required />
                 <span class="hide-show">
                     <label for="check-hide">see</label>
                     <input id="check-hide" type="checkbox"/>
@@ -26,7 +35,7 @@ import Layout from '../layouts/Layout.astro';
               Submit
             </button>
             <footer>
-                <a href="#" >Forgot password?</a>
+                <a href="/resetpass" >Forgot password?</a>
             </footer>
         </form>
     </main>
@@ -125,37 +134,14 @@ import Layout from '../layouts/Layout.astro';
     }
 </style>
 <script>
-    const submit = document.querySelector('button')
     let show = document.getElementById("password") as HTMLInputElement
     const checkbox = document.getElementById("check-hide") as HTMLInputElement;
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
 
     if(checkbox){
         checkbox?.addEventListener('change', () => {
             show.type = checkbox.checked ? 'text' : 'password';
         });
     }
-
-    if(submit && email && password){
-        submit.addEventListener('click', event => {
-            event.preventDefault()
-            if (email.value === 'admin@astro.demo' && password.value === '1234') {
-                sessionStorage.setItem('isLoggedIn', 'true')
-                window.location.href = '/'
-            } else {
-                if(email.value === ''){
-                    alert('error, entry email')
-                }else if(password.value === ''){
-                    alert('error, entry password')
-                }else{
-                    alert('error, try again')
-                }
-            }
-        })
-    }
-
-    
 </script>
 
 

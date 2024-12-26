@@ -1,18 +1,44 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { supabase } from "../lib/supabase";
+
+const accessToken = Astro.cookies.get("sb-access-token");
+const refreshToken = Astro.cookies.get("sb-refresh-token");
+
+if (!accessToken || !refreshToken) {
+  return Astro.redirect("/login");
+}
+
+let session;
+try {
+  session = await supabase.auth.setSession({
+    refresh_token: refreshToken.value,
+    access_token: accessToken.value,
+  });
+  if (session.error) {
+    Astro.cookies.delete("sb-access-token", {
+      path: "/",
+    });
+    Astro.cookies.delete("sb-refresh-token", {
+      path: "/",
+    });
+    return Astro.redirect("/login");
+  }
+} catch (error) {
+  Astro.cookies.delete("sb-access-token", {
+    path: "/",
+  });
+  Astro.cookies.delete("sb-refresh-token", {
+    path: "/",
+  });
+  return Astro.redirect("/login");
+}
+
+const email = session.data.user?.email || 'anonymous';
+
 ---
 
 <Layout title="home" description='basic home page that redirects to login if the session is not started'>
-	<Welcome />
+	<Welcome user={email}/>
 </Layout>
-
-<script>
-	let isLoggedIn = sessionStorage.getItem('isLoggedIn')
-	if(isLoggedIn === null){
-		sessionStorage.setItem('isLoggedIn', 'false')
-		window.location.href = '/login'
-	}else if(isLoggedIn === 'false'){
-		window.location.href = '/login'
-	}
-</script>
